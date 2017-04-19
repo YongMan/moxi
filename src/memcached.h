@@ -496,6 +496,12 @@ struct conn {
     int peer_port;
 
     const char *update_diag;
+
+    #define MAX_ADDR_LEN 50
+    /* add for request slow log */
+    char backend_addr[MAX_ADDR_LEN];
+    uint64_t backend_start_time;
+    uint64_t backend_end_time;
 };
 
 extern conn *listen_conn;

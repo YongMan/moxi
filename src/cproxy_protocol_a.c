@@ -535,6 +535,10 @@ void cproxy_process_downstream_ascii_nread(conn *c) {
     cb_assert(d != NULL);
     cb_assert(d->upstream_conn != NULL);
 
+    c->backend_end_time = usec_now();
+
+    moxi_log_write("ascii req cost %lld\n", c->backend_end_time - c->backend_start_time);
+
     if (IS_ASCII(d->upstream_conn->protocol)) {
         cproxy_process_a2a_downstream_nread(c);
     } else {

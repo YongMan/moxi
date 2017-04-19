@@ -1066,6 +1066,7 @@ bool cproxy_release_downstream(downstream *d, bool force) {
 
     if (d->usec_start > 0) {
         uint64_t ux = usec_now() - d->usec_start;
+        moxi_log_write("backencd: %s cost: %lld us\n", d->downstream_conns[0]->backend_addr ,ux);
 
         d->ptd->stats.stats.tot_downstream_reserved_time += ux;
 
@@ -1600,6 +1601,7 @@ conn *cproxy_connect_downstream_conn(downstream *d,
                            behavior->downstream_protocol);
             c->thread = thread;
             c->cmd_start_time = start;
+            sprintf(c->backend_addr, "%s:%d\0", mcs_server_st_hostname(msst), mcs_server_st_port(msst));
 
 #ifdef WIN32
             if (err == WSAEINPROGRESS) {

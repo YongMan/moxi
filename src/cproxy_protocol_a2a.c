@@ -373,6 +373,8 @@ bool cproxy_forward_a2a_simple_downstream(downstream *d,
     conn *c = cproxy_find_downstream_conn(d, key, key_len, NULL);
     if (c != NULL) {
 
+        c->backend_start_time = usec_now();
+
         if (cproxy_prep_conn_for_write(c)) {
             cb_assert(c->state == conn_pause);
 
@@ -464,6 +466,8 @@ bool cproxy_broadcast_a2a_downstream(downstream *d,
             if (cproxy_prep_conn_for_write(c)) {
                 cb_assert(c->state == conn_pause);
 
+                c->backend_start_time = usec_now();
+
                 out_string(c, command);
 
                 if (update_event(c, EV_WRITE | EV_PERSIST)) {
@@ -536,6 +540,7 @@ bool cproxy_forward_a2a_item_downstream(downstream *d, short cmd,
     /* Assuming we're already connected to downstream. */
     c = cproxy_find_downstream_conn(d, ITEM_key(it), it->nkey, NULL);
     if (c != NULL) {
+        c->backend_start_time = usec_now();
 
         if (cproxy_prep_conn_for_write(c)) {
             char *verb;

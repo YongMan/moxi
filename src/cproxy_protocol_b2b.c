@@ -177,6 +177,9 @@ bool b2b_forward_item(conn *uc, downstream *d, item *it) {
 
     c = cproxy_find_downstream_conn_ex(d, key, keylen, &local, &vbucket);
     if (c != NULL) {
+
+        c->backend_start_time = usec_now();
+
         if (local) {
             uc->hit_local = true;
         }
@@ -436,6 +439,11 @@ void cproxy_process_b2b_downstream_nread(conn *c) {
     if (settings.verbose > 2) {
         moxi_log_write("<%d cproxy_process_b2b_downstream_nread %x %x %d %d %u %d %x\n",
                 c->sfd, c->cmd, opcode, extlen, keylen, bodylen, c->noreply, status);
+    }
+
+    c->backend_end_time = usec_now();
+    if (settings.verbose > 0) {
+        moxi_log_write("backend: %s request cost: %lld us\n",  c->backend_addr, c->backend_end_time - c->backend_start_time);
     }
 
     d = c->extra;

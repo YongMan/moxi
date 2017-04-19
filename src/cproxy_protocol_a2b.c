@@ -716,6 +716,10 @@ void a2b_process_downstream_response(conn *c) {
                 c->sfd, c->cmd, (c->item != NULL), status);
     }
 
+    c->backend_end_time = usec_now();
+    if (settings.verbose > 0) {
+        moxi_log_write("backend: %s request cost: %lld us\n",  c->backend_addr, c->backend_end_time - c->backend_start_time);
+    }
     /* We reach here when we have the entire response, */
     /* including header, ext, key, and possibly item data. */
     /* Now we can get into big switch/case processing. */
@@ -1316,6 +1320,9 @@ bool cproxy_forward_a2b_simple_downstream(downstream *d,
     }
 
     if (c != NULL) {
+
+        c->backend_start_time = usec_now();
+
         if (local) {
             uc->hit_local = true;
         }
@@ -1620,6 +1627,9 @@ bool cproxy_forward_a2b_item_downstream(downstream *d, short cmd,
     c = cproxy_find_downstream_conn_ex(d, ITEM_key(it), it->nkey,
                                        &local, &vbucket);
     if (c != NULL) {
+
+        c->backend_start_time = usec_now();
+
         if (local) {
             uc->hit_local = true;
         }

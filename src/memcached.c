@@ -472,6 +472,9 @@ conn *conn_new(const SOCKET sfd, enum conn_states init_state,
     c->peer_protocol = 0;
     c->peer_port = 0;
     c->update_diag = NULL;
+    c->backend_addr[0] = '\0';
+    c->backend_start_time = 0;
+    c->backend_end_time = 0;
 
     c->extra = extra;
 
